@@ -1,11 +1,5 @@
-
 struct universe {
-    int n_rows;
-    int n_heights;
-
-    int total_alive;
-
-    bool grid[][];
+/*Put some appropriate things here*/
 };
 
 /*Do not modify the next seven lines*/
