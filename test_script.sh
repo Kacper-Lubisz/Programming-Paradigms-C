@@ -4,7 +4,7 @@ export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH
 #This should give no warnings or errors
 make
 
-./gameoflife < glider.txt > output.txt
+./gameoflife < glider.txt > glider_output.txt
 if [ $? -eq 0 ]
 then
   echo Test passed: Correct error code

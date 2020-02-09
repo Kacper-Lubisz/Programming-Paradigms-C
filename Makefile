@@ -1,9 +1,19 @@
 
-./gameoflife: libgol.so
-	gcc -Wall -Wextra -pedantic -std=c11 gameoflife.c -o gameoflife
+all: bin/ bin/gameoflife libgol.dll
+	echo "Project Built"
 
-libgol.so:
-	gcc -Wall -Wextra -pedantic -std=c11
+bin/gameoflife: bin/ libgol.dll
+	gcc -Wall -Wextra -pedantic -std=c11 src/gameoflife.c -o gameoflife -L. -lgol
+
+libgol.dll: bin/ bin/gol.o
+	gcc -Wall -Wextra -pedantic -std=c11 -shared bin/gol.o -o libgol.dll
+
+bin/gol.o: bin/
+	gcc -Wall -Wextra -pedantic -std=c11 -fPIC -c src/gol.c -o bin/gol.o
+
+bin/:
+	[ -d bin ] || mkdir bin
 
 clean:
-	rm ./gameoflife
+	rm bin/*
+	rm ./libgol.dll
