@@ -8,6 +8,18 @@ struct LinkedList {
     struct LinkedList *next;
 };
 
+/**
+ * This function checks if the universe pointer is controlled by this library, in other words, was read by read_in_file.
+ * It does so by asserting the correctness of the magic number stored in the universe.
+ * This has a 2^-32 probability of failure assuming that memory values are uniformly distributed
+ */
+void assert_valid_magic_number(struct universe *u) {
+    if (u->magic_number != MAGIC_NUMBER) {
+        fprintf(stderr, "Invalid universe, magic number doesn't match");
+        exit(1);
+    }
+}
+
 void read_in_file(FILE *infile, struct universe *u) {
 
     if (infile == NULL) {
@@ -17,6 +29,8 @@ void read_in_file(FILE *infile, struct universe *u) {
         fprintf(stderr, "Error, null universe pointer");
         exit(1);
     }
+
+    u->magic_number = MAGIC_NUMBER;
 
     int buffer_size = 256;
     // this was made flexible before I realised there was an upper limit to the number of columns
@@ -210,6 +224,8 @@ void read_in_file(FILE *infile, struct universe *u) {
 
 void write_out_file(FILE *outfile, struct universe *u) {
 
+    assert_valid_magic_number(u);
+
     if (outfile == NULL) {
         fprintf(stderr, "Error, file pointer is null");
         exit(1);
@@ -227,6 +243,8 @@ void write_out_file(FILE *outfile, struct universe *u) {
 
 int is_alive(struct universe *u, int column, int row) {
 
+    assert_valid_magic_number(u);
+
     if (u == NULL) {
         fprintf(stderr, "Error, null universe pointer");
         exit(1);
@@ -238,10 +256,15 @@ int is_alive(struct universe *u, int column, int row) {
         exit(1);
     }
 
-    return (u->grid[row][column] & 255) == '*';
+    //(~0 ^ 1) == 0b11111110, ignore the least significant bit
+    int mask = (~0 ^ 1);
+
+    return (u->grid[row][column] & mask) == '*';
 }
 
 int will_be_alive(struct universe *u, int column, int row) {
+
+    assert_valid_magic_number(u);
 
     if (u == NULL) {
         fprintf(stderr, "Error, null universe pointer");
@@ -272,15 +295,22 @@ int will_be_alive(struct universe *u, int column, int row) {
             }
         }
     }
-
     return alive_neighbours == 3 || (alive_neighbours == 2 && is_alive(u, column, row));
 }
 
+/**
+ * An implementation of the floored division modulus
+ * @param a The dividend
+ * @param b The divisor
+ * @return The remainder
+ */
 int mod(int a, int b) {
     return ((a % b) + b) % b;
 }
 
 int will_be_alive_torus(struct universe *u, int column, int row) {
+
+    assert_valid_magic_number(u);
 
     if (u == NULL) {
         fprintf(stderr, "Error, null universe pointer");
@@ -312,6 +342,8 @@ int will_be_alive_torus(struct universe *u, int column, int row) {
 
 void evolve(struct universe *u, int (*rule)(struct universe *u, int column, int row)) {
 
+    assert_valid_magic_number(u);
+
     if (u == NULL) {
         fprintf(stderr, "Error, null universe pointer");
         exit(1);
@@ -325,7 +357,7 @@ void evolve(struct universe *u, int (*rule)(struct universe *u, int column, int 
     for (int r = 0; r < u->n_rows; ++r) {
         for (int c = 0; c < u->n_columns; ++c) {
             int will_be_alive = (*rule)(u, c, r);
-            u->grid[r][c] |= will_be_alive;
+            u->grid[r][c] |= will_be_alive; // future state is stored in the significant bit
             if (will_be_alive) {
                 u->currently_alive++;
             }
@@ -347,6 +379,8 @@ void evolve(struct universe *u, int (*rule)(struct universe *u, int column, int 
 }
 
 void print_statistics(struct universe *u) {
+
+    assert_valid_magic_number(u);
 
     if (u == NULL) {
         fprintf(stderr, "Error, null universe pointer");

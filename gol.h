@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#define MAGIC_NUMBER 2193512351
+
 struct universe {
     int n_rows;
     int n_columns;
@@ -13,6 +15,8 @@ struct universe {
     int iterations_lived;
 
     char **grid;
+
+    unsigned long int magic_number;
 };
 
 /*Do not modify the next seven lines*/

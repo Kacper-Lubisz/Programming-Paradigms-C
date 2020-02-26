@@ -104,12 +104,6 @@ int main(int argc, char **argv) {
     if (number_of_generations == -1) {
         number_of_generations = 5;
     }
-    if (print_stats == -1) {
-        print_stats = 0;
-    }
-    if (use_torus_topology == -1) {
-        use_torus_topology = 0;
-    }
 
     struct universe v;
 
