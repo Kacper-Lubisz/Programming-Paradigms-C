@@ -18,7 +18,9 @@ void read_in_file(FILE *infile, struct universe *u) {
         exit(1);
     }
 
-    int buffer_size = 8;
+    int buffer_size = 256;
+    // this was made flexible before I realised there was an upper limit to the number of columns
+    // in retrospect this loading function could be simplified if I assumed an inflexible number of columns
 
     char temp[buffer_size];
 
@@ -80,6 +82,11 @@ void read_in_file(FILE *infile, struct universe *u) {
         if (current_buffer != NULL) {
             current_buffer = current_buffer->next;
         }
+    }
+
+    if (u->n_columns > 512) {
+        fprintf(stderr, "Failed to load, the number of columns must be at most 512");
+        exit(1);
     }
 
     struct LinkedList *start_row = malloc(sizeof(struct LinkedList));
