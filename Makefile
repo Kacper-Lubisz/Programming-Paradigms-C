@@ -1,7 +1,7 @@
 C_ARGS = -Wall -Wextra -pedantic -std=c11
 
 # easy port to winMake
-SO_SUFFIX = .dll
+SO_SUFFIX = .so
 SO_NAME = "libgol$(SO_SUFFIX)"
 
 gameoflife: $(SO_NAME)
